@@ -95,7 +95,15 @@ const CommunityPage = () => {
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Failed to create post. Please try again.');
+     
+      
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to create post. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      
       if (error.response && error.response.status === 401) {
         console.log('Unauthorized: Please log in again');
       }
@@ -108,7 +116,14 @@ const CommunityPage = () => {
       setPosts(posts.map(post => post._id === postId ? response.data : post));
     } catch (error) {
       console.error('Error liking post:', error);
-      alert('Failed to like post. Please try again.');
+   
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to like post. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      
       if (error.response && error.response.status === 401) {
         console.log('Unauthorized: Please log in again');
       }
@@ -121,7 +136,14 @@ const CommunityPage = () => {
       setPosts(posts.map(post => post._id === postId ? response.data : post));
     } catch (error) {
       console.error('Error commenting on post:', error);
-      alert('Failed to add comment. Please try again.');
+   
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to add comment. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+
       if (error.response && error.response.status === 401) {
         console.log('Unauthorized: Please log in again');
       }
@@ -212,7 +234,14 @@ const PostItem = ({ post, onLike, onComment }) => {
       .then(() => console.log('Successful share'))
       .catch((error) => console.log('Error sharing', error));
     } else {
-      alert('Web Share API is not supported in your browser. You can copy the URL to share this post.');
+     
+      Swal.fire({
+        title: 'Error!',
+        text: 'Web Share API is not supported in your browser. You can copy the URL to share this post.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      
     }
   };
 

@@ -63,11 +63,24 @@ const Navbar = () => {
                 fetchFriendRequests(); // Refresh the friend requests
             } else {
                 console.error('Error accepting friend request:', response.data);
-                alert(`Failed to accept friend request: ${response.data.message}`);
+               
+                Swal.fire({
+                    title: 'Error!',
+                    text: `Failed to accept friend request: ${response.data.message}`,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                  });
             }
         } catch (error) {
             console.error('Error accepting friend request:', error.response ? error.response.data : error.message);
-            alert('Failed to accept friend request. Please try again.');
+          
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to accept friend request. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+              });
+            
         }
     };
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
    import { useNavigate } from "react-router-dom";
-
+   import Navbar from '../src/components/navBar';
    function Debate_screen() {
      const [roomId, setRoomId] = useState("");
      const navigate = useNavigate();
@@ -13,7 +13,13 @@ import React, { useState } from "react";
 
      const handleOneAndOneCall = () => {
        if (!roomId) {
-         alert("Please Generate Room Id First");
+         
+         Swal.fire({
+          title: 'Error!',
+          text: 'Please Generate Room Id First',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
          return;
        }
        navigate(`/debate-room/${roomId}?type=one-on-one`);
@@ -21,16 +27,22 @@ import React, { useState } from "react";
 
      const handleGroupCall = () => {
        if (!roomId) {
-         alert("Please Generate Room Id First");
+        Swal.fire({
+          title: 'Error!',
+          text: 'Please Generate Room Id First',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
          return;
        }
        navigate(`/debate-room/${roomId}?type=group-call`);
      };
 
      return (
-       <div className="flex justify-center items-center h-screen bg-blue-50 font-sans">
+      <>  <Navbar></Navbar>
+       <div className="flex justify-center items-center h-screen bg-blue-50 font-sans">     
          <div className="text-center">
-           <h1 className="text-4xl mb-2 text-gray-800">Welcome to Video Calling App</h1>
+           <h1 className="text-4xl mb-2 text-gray-800">Welcome to Study jo</h1>
            <p className="text-lg mb-5 text-gray-600">
              Start a video call with a randomly generated Room ID
            </p>
@@ -67,6 +79,7 @@ import React, { useState } from "react";
            </div>
          </div>
        </div>
+       </>
      );
    }
 

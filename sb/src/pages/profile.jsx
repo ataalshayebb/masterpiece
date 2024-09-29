@@ -70,10 +70,23 @@ function Profile() {
         headers: { "x-auth-token": token }
       });
       setUserData(response.data);
-      alert("Profile updated successfully!");
+      
+      Swal.fire({
+        title: 'Success!',
+        text: 'Profile updated successfully!',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+ 
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update profile. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
     }
   };
 

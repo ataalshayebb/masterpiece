@@ -6,7 +6,7 @@ import Slider from "react-slick";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
-const PeopleCard = ({ image, username, title, level, country }) => (
+const PeopleCard = ({ image, username, title, level, country, onConnect, _id }) => (
   <div className="bg-white rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105 hover:shadow-lg">
     <img src={image || 'https://via.placeholder.com/100'} alt={username} className="w-16 h-16 rounded-full object-cover" />
     <div className="flex-grow">
@@ -14,7 +14,10 @@ const PeopleCard = ({ image, username, title, level, country }) => (
       <p className="text-sm text-gray-600">{title}</p>
       <p className="text-sm text-gray-500">{level} • {country}</p>
     </div>
-    <button className="bg-pink-500 text-white px-4 py-2 rounded-full hover:bg-pink-600 transition-colors">
+    <button 
+      className="bg-pink-500 text-white px-4 py-2 rounded-full hover:bg-pink-600 transition-colors"
+      onClick={() => onConnect(_id)}
+    >
       <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
       Connect
     </button>
@@ -27,29 +30,48 @@ const PeopleYouMayKnow = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPeople = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No authentication token found');
-        }
-        const response = await axios.get('http://localhost:5000/api/friends/suggestions', {
-          headers: { 'x-auth-token': token }
-        });
-        console.log('Suggestions received:', response.data);
-        setPeople(response.data);
-      } catch (error) {
-        console.error('Error fetching user suggestions:', error);
-        setError(error.response?.data?.message || error.message || 'An error occurred while fetching user suggestions');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchPeople();
   }, []);
+
+  const fetchPeople = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      const response = await axios.get('http://localhost:5000/api/friends/suggestions', {
+        headers: { 'x-auth-token': token }
+      });
+      console.log('Suggestions received:', response.data);
+      setPeople(response.data);
+    } catch (error) {
+      console.error('Error fetching user suggestions:', error);
+      setError(error.response?.data?.message || error.message || 'An error occurred while fetching user suggestions');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConnect = async (friendId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      await axios.post('http://localhost:5000/api/friends/send-request', 
+        { friendId },
+        { headers: { 'x-auth-token': token } }
+      );
+      // Remove the user from the suggestions list
+      setPeople(people.filter(person => person._id !== friendId));
+      // Optionally, you can show a success message here
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+      // Optionally, you can show an error message here
+    }
+  };
 
   const settings = {
     dots: true,
@@ -96,7 +118,7 @@ const PeopleYouMayKnow = () => {
       <Slider {...settings}>
         {people.map((person) => (
           <div key={person._id} className="px-2">
-            <PeopleCard {...person} />
+            <PeopleCard {...person} onConnect={handleConnect} />
           </div>
         ))}
       </Slider>

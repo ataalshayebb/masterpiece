@@ -27,7 +27,7 @@ import Debate_screen from './debatescreen';
 
 function App(){
   const router = createBrowserRouter([
-  {path:'/j',element:<Home />}
+  {path:'/',element:<Home />}
   ,{path: '/regone',element:<EducationComponent/>}
   ,{path: '/regtwo',element:<CountryComponent/>}
   ,{path: '/regthree',element:<WelcomeComponent/>}
@@ -36,7 +36,7 @@ function App(){
   ,{path: '/messages',element:<ChatInterface/>}
   ,{path: '/friends',element:<Friends/>}
   ,{path: '/tutor',element:<AITutor/>}
-   ,{path:"/" ,element:<Debate_screen />} ,
+   ,{path:"/debate-screen" ,element:<Debate_screen />} ,
    ,{path:"/debate-room/:roomId" ,element:<Debate_Room />} 
 
   

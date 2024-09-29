@@ -54,7 +54,7 @@ const EducationComponent = () => {
           </div>
         </div>
         
-        <h2 className="text-3xl font-bold mb-6">Are you a Tlawjihi or a University student? 🖥️</h2>
+        <h2 className="text-3xl font-bold mb-6">Are you a Tawjihi or a University student? 🖥️</h2>
         
         {error && <p className="text-red-500 mb-4">{error}</p>}
         
