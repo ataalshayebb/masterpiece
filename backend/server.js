@@ -64,6 +64,7 @@ const generationConfig = {
 
 app.use("/api/auth", require("./routes/authrouter"));
 app.use("/api/profile", require("./routes/profilerouter"));
+app.use("/api/cprofile", require("./routes/communityprofilerouter"));
 app.use("/api/friends", require("./routes/friendrouter"));
 app.use("/api/messages", require("./routes/messagerouter"));
 app.use("/api/posts", require("./routes/postsrouter"));

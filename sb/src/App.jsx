@@ -24,6 +24,8 @@ import ChatInterface from './pages/messages';
 import Friends from './pages/friends';
 import Debate_Room from './debateroom';
 import Debate_screen from './debatescreen';
+import DynamicStudySession from './components/studysession';
+import CreateStudySession from './pages/create';
 
 function App(){
   const router = createBrowserRouter([
@@ -38,6 +40,10 @@ function App(){
   ,{path: '/tutor',element:<AITutor/>}
    ,{path:"/debate-screen" ,element:<Debate_screen />} ,
    ,{path:"/debate-room/:roomId" ,element:<Debate_Room />} 
+  //  ,{ path:"/join-study-session/:sessionId" ,element:<DynamicStudySession />} 
+  //  , {path:"/create-study-session", element:<CreateStudySession />}
+  //  ,{path:"/study-session" , element:<DynamicStudySession />} 
+  //   ,{path:"/study-session/:sessionId", element:<DynamicStudySession />}
 
   
   

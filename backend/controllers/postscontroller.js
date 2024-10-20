@@ -1,7 +1,7 @@
 const Post = require('../models/posts');
 const multer = require('multer');
 const path = require('path');
-
+const User = require('../models/users')
 // Configure multer for file upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -120,5 +120,53 @@ exports.commentOnPost = async (req, res) => {
     res.json(post);
   } catch (error) {
     res.status(500).json({ message: 'Error commenting on post', error: error.message });
+  }
+};
+
+
+exports.savePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user.id; // Assuming you have user information in the request
+
+    const user = await User.findById(userId);
+    const postIndex = user.savedposts.findIndex(
+      (savedPost) => savedPost.postId.toString() === postId
+    );
+
+    if (postIndex > -1) {
+      // Post is already saved, so remove it
+      user.savedposts.splice(postIndex, 1);
+      await user.save();
+      res.json({ saved: false, message: 'Post removed from saved posts' });
+    } else {
+      // Post is not saved, so add it
+      user.savedposts.push({ postId });
+      await user.save();
+      res.json({ saved: true, message: 'Post saved successfully' });
+    }
+  } catch (error) {
+    console.error('Error saving post:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.getSavedPosts = async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming you have user information in the request
+
+    const user = await User.findById(userId).populate({
+      path: 'savedposts.postId',
+      populate: {
+        path: 'userId',
+        select: 'username image'
+      }
+    });
+
+    const savedPosts = user.savedposts.map(savedPost => savedPost.postId);
+    res.json(savedPosts);
+  } catch (error) {
+    console.error('Error fetching saved posts:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };

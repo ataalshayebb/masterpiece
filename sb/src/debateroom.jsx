@@ -4,7 +4,9 @@ import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import axios from 'axios';
 import io from 'socket.io-client';
 import { APP_ID, SECRET } from "../src/debate_settings";
-import Navbar from "./components/navBar";
+// import Navbar from "./components/navBar";
+// import Swal from 'sweetalert2';
+import * as jwtDecode from 'jwt-decode';
 
 function Debate_Room() {
   const { roomId } = useParams();
@@ -17,6 +19,7 @@ function Debate_Room() {
   const [callType, setCallType] = useState("");
   const [friends, setFriends] = useState([]);
   const [sharedLinks, setSharedLinks] = useState([]);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     // Initialize socket connection
@@ -26,6 +29,18 @@ function Debate_Room() {
     socketRef.current.on('receive_link', (links) => {
       setSharedLinks(links);
     });
+
+    // Fetch user name from token
+    const name = localStorage.getItem('username');
+    if (name) {
+      try {
+     
+        setUserName(name|| "User");
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setUserName("User");
+      }
+    }
 
     return () => {
       // Clean up socket connection on component unmount
@@ -54,7 +69,7 @@ function Debate_Room() {
       SECRET,
       roomId,
       Date.now().toString(),
-      "Your Name"
+      userName
     );
     const zp = ZegoUIKitPrebuilt.create(kitToken);
     zpRef.current = zp;
@@ -106,7 +121,7 @@ function Debate_Room() {
   }, [location.search]);
 
   useEffect(() => {
-    if (callType) {
+    if (callType && userName) {
       myMeeting(callType);
     }
     return () => {
@@ -114,7 +129,7 @@ function Debate_Room() {
         zpRef.current.destroy();
       }
     };
-  }, [callType, roomId, navigate]);
+  }, [callType, roomId, navigate, userName]);
 
   const sendLinkToFriend = async (friendId) => {
     if (sharedLinks.length > 0) {
@@ -136,7 +151,7 @@ function Debate_Room() {
         });
         Swal.fire({
           title: 'Success!',
-          text: 'link sent successfully!',
+          text: 'Link sent successfully!',
           icon: 'success',
           confirmButtonText: 'OK'
         });
@@ -161,75 +176,73 @@ function Debate_Room() {
 
   return (
     <>
-    {/* <Navbar></Navbar> */}
-    <div className="flex flex-col h-screen">
-      {!joined && (
-        <>
-        
-          <header className="bg-gray-800 text-white p-4 text-center text-xl">
-            {callType === "one-on-one" ? "One-on-One Video Call" : "Group Video Call"}
-          </header>
-          <button
-            className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={handleExit}
-          >
-            Exit
-          </button>
-        </>
-      )}
-      <div
-        ref={videoContainerRef}
-        className="flex flex-1 justify-center items-center h-[calc(100vh-3rem)]"
-      />
-      
-      <div className="m-4 p-4 bg-white shadow rounded">
-        {sharedLinks && sharedLinks.length > 0 && (
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold mb-2">Shared Links:</h2>
-            <ul>
-              {sharedLinks.map((link, index) => (
-                <li key={index} className="mb-1">
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+      <div className="flex flex-col h-screen">
+        {!joined && (
+          <>
+            <header className="bg-gray-800 text-white p-4 text-center text-xl">
+              {callType === "one-on-one" ? "One-on-One Video Call" : "Group Video Call"}
+            </header>
+            <button
+              className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded hover:bg-red-600"
+              onClick={handleExit}
+            >
+              Exit
+            </button>
+          </>
         )}
+        <div
+          ref={videoContainerRef}
+          className="flex flex-1 justify-center items-center h-[calc(100vh-3rem)]"
+        />
+        
+        <div className="m-4 p-4 bg-white shadow rounded">
+          {sharedLinks && sharedLinks.length > 0 && (
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold mb-2">Shared Links:</h2>
+              <ul>
+                {sharedLinks.map((link, index) => (
+                  <li key={index} className="mb-1">
+                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-        <h2 className="text-lg font-semibold mb-2">Friends:</h2>
-        <ul className="space-y-2">
-          {friends.map(friend => (
-            <li key={friend._id} className="flex items-center justify-between bg-gray-100 p-2 rounded">
-              <div className="flex items-center">
-                {friend.image && <img src={friend.image} alt={friend.username} className="w-8 h-8 rounded-full mr-2" />}
-                <span>{friend.username}</span>
-              </div>
-              <div className="flex space-x-2">
-                <button 
-                  onClick={() => sendLinkToFriend(friend._id)}
-                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                  Send Link
-                </button>
-                <Link to={`/messages`}>
-                  <button className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center">
+          <h2 className="text-lg font-semibold mb-2">Friends:</h2>
+          <ul className="space-y-2">
+            {friends.map(friend => (
+              <li key={friend._id} className="flex items-center justify-between bg-gray-100 p-2 rounded">
+                <div className="flex items-center">
+                  {friend.image && <img src={friend.image} alt={friend.username} className="w-8 h-8 rounded-full mr-2" />}
+                  <span>{friend.username}</span>
+                </div>
+                <div className="flex space-x-2">
+                  <button 
+                    onClick={() => sendLinkToFriend(friend._id)}
+                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    Message
+                    Send Link
                   </button>
-                </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  <Link to={`/messages`}>
+                    <button className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                      </svg>
+                      Message
+                    </button>
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
     </>
   );
 }

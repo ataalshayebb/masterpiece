@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from '../components/navBar';
 import Discord from '../components/mainuser';
 import FriendsList from '../components/friends';
-import StudySession from '../components/studysession';
+import DynamicStudySession from '../components/studysession';
 import PeopleYouMayKnow from '../components/people';
 import WelcomeSection from '../components/welcome';
 import DidYouKnow from '../components/didyou';
@@ -18,7 +18,7 @@ const UserHome = () => (
         <Discord className="w-full" />
         <div className="flex justify-center">
           <div className="w-full mb-10 max-w-4xl">
-            <StudySession />
+            <DynamicStudySession />
           </div>
         </div>
       </div>

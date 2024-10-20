@@ -21,6 +21,9 @@ const usersSchema = new Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
     isFriend: { type: Boolean, default: false }
   }],
+  savedposts: [{
+    postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Posts' },
+  }],
   isSubscribed: { type: Boolean, default: false }
  
   

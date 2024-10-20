@@ -7,19 +7,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
 const PeopleCard = ({ image, username, title, level, country, onConnect, _id }) => (
-  <div className="bg-white rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105 hover:shadow-lg">
-    <img src={image || 'https://via.placeholder.com/100'} alt={username} className="w-16 h-16 rounded-full object-cover" />
-    <div className="flex-grow">
-      <h3 className="font-semibold text-lg">{username}</h3>
-      <p className="text-sm text-gray-600">{title}</p>
-      <p className="text-sm text-gray-500">{level} • {country}</p>
+  <div className="bg-white rounded-lg shadow-md p-3 flex items-center space-x-3 transition-transform transform hover:scale-105 hover:shadow-lg h-24">
+    <img src={image || 'https://via.placeholder.com/100'} alt={username} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
+    <div className="flex-grow min-w-0">
+      <h3 className="font-semibold text-sm leading-tight truncate">{username}</h3>
+      <p className="text-xs text-gray-600 truncate">{title}</p>
+      <p className="text-xs text-gray-500 truncate">{level} • {country}</p>
     </div>
     <button 
-      className="bg-pink-500 text-white px-4 py-2 rounded-full hover:bg-pink-600 transition-colors"
+      className="bg-pink-500 text-white p-1.5 rounded-lg hover:bg-pink-600 transition-colors w-8 h-8 flex items-center justify-center flex-shrink-0"
       onClick={() => onConnect(_id)}
+      aria-label="Connect"
     >
-      <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
-      Connect
+      <FontAwesomeIcon icon={faUserPlus} className="text-sm" />
     </button>
   </div>
 );
@@ -64,33 +64,37 @@ const PeopleYouMayKnow = () => {
         { friendId },
         { headers: { 'x-auth-token': token } }
       );
-      // Remove the user from the suggestions list
       setPeople(people.filter(person => person._id !== friendId));
-      // Optionally, you can show a success message here
     } catch (error) {
       console.error('Error sending friend request:', error);
-      // Optionally, you can show an error message here
     }
   };
 
   const settings = {
     dots: true,
-    infinite: people.length > 3,
+    infinite: people.length > 4,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     responsive: [
+      {
+        breakpoint: 1280,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          infinite: people.length > 3,
+        }
+      },
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
           infinite: people.length > 2,
-          dots: true
         }
       },
       {
-        breakpoint: 600,
+        breakpoint: 640,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
@@ -113,8 +117,8 @@ const PeopleYouMayKnow = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto relative p-4">
-      <h2 className="text-2xl font-bold mb-4">Students you may know:</h2>
+    <div className="max-w-6xl mx-auto relative p-4">
+      <h2 className="text-2xl font-bold mb-6">Students you may know:</h2>
       <Slider {...settings}>
         {people.map((person) => (
           <div key={person._id} className="px-2">

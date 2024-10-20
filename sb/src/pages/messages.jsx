@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/navBar';
 import { LongerMessagesPopup, NitroPlanPopup, PaymentTypePopup } from '../components/paymentt';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,6 +28,7 @@ const ChatInterface = () => {
   const prevMessagesLengthRef = useRef(0);
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
 
   useEffect(() => {
     socketRef.current = io('http://localhost:5000');
@@ -118,11 +119,37 @@ const ChatInterface = () => {
       const parsedContent = JSON.parse(message.content);
       if (parsedContent.type === 'video-link') {
         return (
-          <div>
+          <div className="bg-blue-100 p-3 rounded-lg mb-2">
             <p>{parsedContent.text}</p>
-            <a href={parsedContent.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+            <a
+              href={parsedContent.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
               Join Video Call
             </a>
+            <button 
+              onClick={() => window.open(parsedContent.link, "_blank")}
+              className="ml-2 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Join Now
+            </button>
+          </div>
+        );
+      } else if (parsedContent.type === 'study-session-invite') {
+        return (
+          <div className="bg-blue-100 p-3 rounded-lg mb-2">
+            <p>{parsedContent.text}</p>
+            <a href={parsedContent.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+              View Session
+            </a>
+            <button 
+              onClick={() => joinStudySession(parsedContent.sessionId)}
+              className="ml-2 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Join Now
+            </button>
           </div>
         );
       }
@@ -130,6 +157,10 @@ const ChatInterface = () => {
       // If parsing fails, it's a regular message
     }
     return message.content;
+  };
+
+  const joinStudySession = (sessionId) => {
+    navigate(`/join-study-session/${sessionId}`);
   };
 
   if (isLoading) {
@@ -306,7 +337,8 @@ const ChatInterface = () => {
       </div>
 
       {/* Popups */}
-      <AnimatePresence>
+    {/* Popups */}
+    <AnimatePresence>
         {showPopup !== null && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -326,27 +358,27 @@ const ChatInterface = () => {
               {showPopup === 3 && <PaymentTypePopup onClose={handleClosePopup} />}
             </motion.div>
           </motion.div>
-          )}
-          </AnimatePresence>
-    
-          <style jsx>{`
-            .custom-scrollbar::-webkit-scrollbar {
-              width: 6px;
-            }
-            .custom-scrollbar::-webkit-scrollbar-track {
-              background: #f1f1f1;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb {
-              background: #3b82f6;
-              border-radius: 3px;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-              background: #2563eb;
-            }
-          `}</style>
-          <Footer />
-        </div>
-      );
-    };
-    
-    export default ChatInterface;
+        )}
+      </AnimatePresence>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #3b82f6;
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #2563eb;
+        }
+      `}</style>
+      <Footer />
+    </div>
+  );
+};
+
+export default ChatInterface;

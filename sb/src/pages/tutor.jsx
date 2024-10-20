@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { FaPaperPlane, FaRobot, FaUser, FaLightbulb, FaBook } from 'react-icons/fa';
+import { FaPaperPlane, FaRobot, FaUser, FaGraduationCap } from 'react-icons/fa';
 import Navbar from '../components/navBar';
 
 function AITutor() {
@@ -64,58 +64,57 @@ function AITutor() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="p-6 bg-blue-500 text-white">
-            <h2 className="text-3xl font-bold flex items-center justify-center">
-              <FaLightbulb className="mr-2 animate-pulse text-yellow-300" />
+        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-pink-100">
+          <div className="p-6 bg-white border-b border-pink-100">
+            <h2 className="text-3xl font-bold text-gray-800 flex items-center justify-center">
+              <FaGraduationCap className="mr-2 text-pink-400" />
               AI Tutor
-              <FaBook className="ml-2 animate-bounce text-pink-300" />
             </h2>
           </div>
-          <div ref={chatContainerRef} className="h-96 overflow-y-auto p-6 bg-gray-50">
+          <div ref={chatContainerRef} className="h-[32rem] overflow-y-auto p-6 bg-white">
             {chatHistory.map((entry, index) => (
-              <div key={index} className={`flex ${entry.role === 'user' ? 'justify-end' : 'justify-start'} mb-4 animate-fadeIn`}>
+              <div key={index} className={`flex ${entry.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
                 <div className={`flex items-end max-w-[75%] ${entry.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full ${entry.role === 'user' ? 'bg-blue-500 ml-2' : 'bg-pink-500 mr-2'} transition-transform duration-300 ease-in-out transform hover:scale-110 overflow-hidden`}>
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full ${entry.role === 'user' ? 'bg-pink-100 ml-2' : 'bg-gray-100 mr-2'}`}>
                     {entry.role === 'user' ? (
                       user && user.image ? (
-                        <img src={user.image} alt={user.username} className="w-full h-full object-cover" />
+                        <img src={user.image} alt={user.username} className="w-full h-full object-cover rounded-full" />
                       ) : (
-                        <FaUser className="text-white" />
+                        <FaUser className="text-pink-400" />
                       )
                     ) : (
-                      <FaRobot className="text-white" />
+                      <FaRobot className="text-gray-400" />
                     )}
                   </div>
-                  <div className={`px-4 py-2 rounded-lg ${entry.role === 'user' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'} shadow-md hover:shadow-lg transition-shadow duration-300`}>
+                  <div className={`px-4 py-2 rounded-lg ${entry.role === 'user' ? 'bg-pink-50 text-gray-800' : 'bg-gray-100 text-gray-800'}`}>
                     {entry.parts[0].text}
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <form onSubmit={handleSubmit} className="p-4 bg-gray-200">
+          <form onSubmit={handleSubmit} className="p-4 bg-white border-t border-pink-100">
             <div className="flex space-x-2">
               <input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Ask your question..."
-                className="flex-grow px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300"
+                className="flex-grow px-4 py-2 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 transition-all duration-300"
                 disabled={isLoading}
               />
               <button
                 type="submit"
-                className={`px-6 py-2 rounded-full ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-pink-500 hover:bg-pink-600'} text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105`}
+                className={`px-6 py-2 rounded-full ${isLoading ? 'bg-gray-200 cursor-not-allowed' : 'bg-pink-400 hover:bg-pink-500'} text-white focus:outline-none focus:ring-2 focus:ring-pink-300 transition-all duration-300`}
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <div className="w-6 h-6 border-t-2 border-white rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-t-2 border-white rounded-full animate-spin"></div>
                 ) : (
-                  <FaPaperPlane className="text-xl" />
+                  <FaPaperPlane className="text-lg" />
                 )}
               </button>
             </div>
